@@ -1,0 +1,13 @@
+import { AppNavbar } from '@/components/layout/app-navbar'
+import { LoginForm } from '@/features/auth/login-form'
+
+export function LoginPage() {
+  return (
+    <div className="min-h-dvh bg-background">
+      <AppNavbar showAuthActions={false} />
+      <main className="mx-auto flex w-full max-w-5xl justify-center px-4 py-10 sm:px-6 sm:py-16">
+        <LoginForm />
+      </main>
+    </div>
+  )
+}

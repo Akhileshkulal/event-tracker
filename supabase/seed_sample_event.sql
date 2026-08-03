@@ -1,0 +1,28 @@
+-- Optional seed for testing Participant Portal before Organizer Portal exists.
+-- 1. Sign up an organizer account in the app
+-- 2. Replace ORGANIZER_USER_UUID below with that user's id from public.users
+-- 3. Run this in the Supabase SQL Editor
+
+-- INSERT INTO public.events (
+--   title,
+--   description,
+--   location,
+--   venue,
+--   start_time,
+--   end_time,
+--   capacity,
+--   organizer_id,
+--   status,
+--   is_registration_open
+-- ) VALUES (
+--   'Tech Fest 2026',
+--   'A campus-wide tech showcase with talks, workshops, and demos.',
+--   'Main Campus',
+--   'Auditorium Hall A',
+--   timezone('utc', now()) + interval '3 days',
+--   timezone('utc', now()) + interval '3 days 4 hours',
+--   200,
+--   'ORGANIZER_USER_UUID',
+--   'published',
+--   true
+-- );
