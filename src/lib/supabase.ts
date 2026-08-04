@@ -1,12 +1,22 @@
 import { createClient } from '@supabase/supabase-js'
 
+function sanitizeEnv(val?: string): string {
+  if (!val) return ''
+  return val.trim().replace(/^["']|["']$/g, '').replace(/[\r\n]/g, '').trim()
+}
+
+const envUrl = sanitizeEnv(import.meta.env.VITE_SUPABASE_URL)
+const envKey = sanitizeEnv(import.meta.env.VITE_SUPABASE_ANON_KEY)
+
 const supabaseUrl =
-  import.meta.env.VITE_SUPABASE_URL ||
-  'https://rzynlmyrechyanyjgequ.supabase.co'
+  envUrl && envUrl.startsWith('http')
+    ? envUrl
+    : 'https://rzynlmyrechyanyjgequ.supabase.co'
 
 const supabaseAnonKey =
-  import.meta.env.VITE_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6eW5sbXlyZWNoeWFueWpnZXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3NDk3NDEsImV4cCI6MjEwMTMyNTc0MX0.STrthQPalwgSy01KWjGxjhAV3PeTHDFFImh2J2-A1DM'
+  envKey && envKey.length > 20
+    ? envKey
+    : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6eW5sbXlyZWNoeWFueWpnZXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3NDk3NDEsImV4cCI6MjEwMTMyNTc0MX0.STrthQPalwgSy01KWjGxjhAV3PeTHDFFImh2J2-A1DM'
 
 /**
  * Typed domain models live in `@/types`.
@@ -20,4 +30,5 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: true,
   },
 })
+
 
