@@ -31,6 +31,7 @@ export function LoginForm() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -53,6 +54,11 @@ export function LoginForm() {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  const handleFillDemo = (email: string, pass: string = '12345678') => {
+    setValue('email', email, { shouldValidate: true, shouldDirty: true, shouldTouch: true })
+    setValue('password', pass, { shouldValidate: true, shouldDirty: true, shouldTouch: true })
   }
 
   return (
@@ -142,16 +148,7 @@ export function LoginForm() {
               variant="outline"
               size="sm"
               className="h-8 text-[11px] rounded-lg px-1 truncate"
-              onClick={() => {
-                const elEmail = document.getElementById('email') as HTMLInputElement
-                const elPass = document.getElementById('password') as HTMLInputElement
-                if (elEmail && elPass) {
-                  elEmail.value = 'user1@gmail.com'
-                  elPass.value = '12345678'
-                  elEmail.dispatchEvent(new Event('input', { bubbles: true }))
-                  elPass.dispatchEvent(new Event('input', { bubbles: true }))
-                }
-              }}
+              onClick={() => handleFillDemo('user1@gmail.com')}
             >
               Participant
             </Button>
@@ -160,16 +157,7 @@ export function LoginForm() {
               variant="outline"
               size="sm"
               className="h-8 text-[11px] rounded-lg px-1 truncate"
-              onClick={() => {
-                const elEmail = document.getElementById('email') as HTMLInputElement
-                const elPass = document.getElementById('password') as HTMLInputElement
-                if (elEmail && elPass) {
-                  elEmail.value = 'organizer1@eventtrack.com'
-                  elPass.value = '12345678'
-                  elEmail.dispatchEvent(new Event('input', { bubbles: true }))
-                  elPass.dispatchEvent(new Event('input', { bubbles: true }))
-                }
-              }}
+              onClick={() => handleFillDemo('organizer1@eventtrack.com')}
             >
               Organizer
             </Button>
@@ -178,16 +166,7 @@ export function LoginForm() {
               variant="outline"
               size="sm"
               className="h-8 text-[11px] rounded-lg px-1 truncate"
-              onClick={() => {
-                const elEmail = document.getElementById('email') as HTMLInputElement
-                const elPass = document.getElementById('password') as HTMLInputElement
-                if (elEmail && elPass) {
-                  elEmail.value = 'volunteer1@eventtrack.com'
-                  elPass.value = '12345678'
-                  elEmail.dispatchEvent(new Event('input', { bubbles: true }))
-                  elPass.dispatchEvent(new Event('input', { bubbles: true }))
-                }
-              }}
+              onClick={() => handleFillDemo('volunteer1@eventtrack.com')}
             >
               Volunteer
             </Button>
