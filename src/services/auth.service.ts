@@ -35,7 +35,7 @@ export async function signUp(input: SignUpInput) {
 
     if (error) throw error
     return data
-  } catch (error) {
+  } catch (_error) {
     const now = new Date().toISOString()
     const newUser: User = {
       id: `usr_${Date.now()}`,
