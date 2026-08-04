@@ -42,4 +42,25 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    chunkSizeWarningLimit: 1600,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('@supabase')) {
+              return 'vendor-supabase'
+            }
+            if (id.includes('lucide-react')) {
+              return 'vendor-icons'
+            }
+            if (id.includes('@tanstack') || id.includes('react-router-dom')) {
+              return 'vendor-router-query'
+            }
+            return 'vendor'
+          }
+        },
+      },
+    },
+  },
 })
