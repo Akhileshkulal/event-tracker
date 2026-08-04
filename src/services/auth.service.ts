@@ -36,6 +36,7 @@ export async function signUp(input: SignUpInput) {
     if (error) throw error
     return data
   } catch (error) {
+    const now = new Date().toISOString()
     const newUser: User = {
       id: `usr_${Date.now()}`,
       email,
@@ -45,7 +46,8 @@ export async function signUp(input: SignUpInput) {
       branch: branch ?? null,
       phone: phone ?? null,
       avatar_url: null,
-      created_at: new Date().toISOString(),
+      created_at: now,
+      updated_at: now,
     }
     localStorage.setItem(DEMO_USER_KEY, JSON.stringify(newUser))
     return { session: { user: newUser } as any, user: newUser as any }
