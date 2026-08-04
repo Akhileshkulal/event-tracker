@@ -75,7 +75,7 @@ export function ManualCheckInForm({
 
   return (
     <div className="space-y-5">
-      <form className="space-y-3" onSubmit={handleLookup}>
+      <form className="space-y-3" onSubmit={handleLookup} noValidate>
         <div className="space-y-2">
           <Label htmlFor="qr-token">Registration QR token</Label>
           <Input
@@ -85,10 +85,6 @@ export function ManualCheckInForm({
             placeholder="Paste token or eventtrack:reg:…"
             className="h-12 rounded-xl text-base"
           />
-          <p className="text-xs text-muted-foreground">
-            Camera scanning arrives in Phase 7. For now, paste the token from a
-            participant QR.
-          </p>
         </div>
         <Button
           type="submit"

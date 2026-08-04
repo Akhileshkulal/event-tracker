@@ -1,8 +1,11 @@
 import { Link, useParams } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, CalendarDays, MapPin } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
-import { useRegistration } from '@/hooks/use-events'
+import { registrationKeys, useRegistration } from '@/hooks/use-events'
+import { regenerateRegistrationQr } from '@/services/registrations.service'
 import { QrCard } from '@/components/shared/qr-card'
+import { CertificateCard } from '@/features/certificates'
 import { formatDateTime } from '@/utils/date'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -11,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 export function ParticipantRegistrationDetailPage() {
   const { registrationId } = useParams<{ registrationId: string }>()
   const { user } = useAuth()
+  const queryClient = useQueryClient()
   const regQuery = useRegistration(registrationId)
 
   if (regQuery.isLoading) {
@@ -44,6 +48,26 @@ export function ParticipantRegistrationDetailPage() {
         </Button>
       </main>
     )
+  }
+
+  const canRegenerate =
+    reg.status !== 'cancelled' &&
+    Boolean(user && (user.id === reg.participant_id || user.role === 'admin'))
+
+  async function handleRegenerate() {
+    if (!registrationId || !user) return
+    await regenerateRegistrationQr(registrationId)
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: registrationKeys.detail(registrationId),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: registrationKeys.mine(user.id),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: registrationKeys.forEvent(reg.event_id, user.id),
+      }),
+    ])
   }
 
   return (
@@ -85,7 +109,9 @@ export function ParticipantRegistrationDetailPage() {
         {reg.events?.location || reg.events?.venue ? (
           <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin className="size-4 text-primary" />
-            {[reg.events.venue, reg.events.location].filter(Boolean).join(' · ')}
+            {[reg.events.venue, reg.events.location]
+              .filter(Boolean)
+              .join(' · ')}
           </p>
         ) : null}
 
@@ -98,7 +124,29 @@ export function ParticipantRegistrationDetailPage() {
         ) : null}
       </div>
 
-      <QrCard qrToken={reg.qr_token} />
+      <QrCard
+        qrToken={reg.qr_token}
+        registrationId={reg.id}
+        eventTitle={reg.events?.title}
+        qrVersion={reg.qr_version ?? 1}
+        canRegenerate={canRegenerate}
+        onRegenerate={handleRegenerate}
+      />
+
+      {reg.status === 'checked_in' ? (
+        <div className="space-y-3 pt-2">
+          <h2 className="text-lg font-semibold tracking-tight">
+            Your Event Certificate
+          </h2>
+          <CertificateCard
+            participantName={user?.full_name ?? 'Participant'}
+            usn={user?.usn}
+            eventTitle={reg.events?.title ?? 'Event'}
+            eventDate={reg.events?.start_time}
+            registrationId={reg.id}
+          />
+        </div>
+      ) : null}
     </main>
   )
 }

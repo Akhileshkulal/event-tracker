@@ -20,10 +20,11 @@ events *──* users (via event_volunteers)
 ## QR security model
 
 - Each **registration** gets one unique `qr_token` (`encode(gen_random_bytes(32), 'hex')`).
-- QR payload contains **only** the token (optionally prefixed `eventtrack:reg:`).
+- QR payload contains **only** the token (prefixed `eventtrack:reg:`).
 - No name, USN, email, or other PII is encoded in the QR.
 - Volunteers call `lookup_registration_by_qr(token)` to fetch participant + event details.
 - Volunteers call `mark_attendance(token)` to check in; duplicates raise an error.
+- Participants/organizers can call `regenerate_registration_qr(registration_id)` to rotate the token (`qr_version` increments; old QR stops working).
 
 ## Applying migrations
 

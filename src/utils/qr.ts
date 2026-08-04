@@ -1,12 +1,23 @@
 /**
  * QR payload helpers.
  * The QR code stores ONLY a secure registration token — never PII.
+ *
+ * Payload format: eventtrack:reg:<64-char-hex-token>
  */
 
-const QR_PREFIX = 'eventtrack:reg:'
+export const QR_PREFIX = 'eventtrack:reg:'
+
+export type QrPayloadParts = {
+  token: string
+  raw: string
+}
 
 export function buildQrPayload(qrToken: string): string {
-  return `${QR_PREFIX}${qrToken}`
+  const token = qrToken.trim().toLowerCase()
+  if (!token) {
+    throw new Error('QR token is required')
+  }
+  return `${QR_PREFIX}${token}`
 }
 
 export function parseQrPayload(raw: string): string | null {
@@ -14,13 +25,20 @@ export function parseQrPayload(raw: string): string | null {
 
   if (value.startsWith(QR_PREFIX)) {
     const token = value.slice(QR_PREFIX.length).trim()
-    return token.length > 0 ? token : null
+    return isValidQrToken(token) ? token.toLowerCase() : null
   }
 
-  // Allow raw hex tokens (64 chars from gen_random_bytes(32))
-  if (/^[a-f0-9]{64}$/i.test(value)) {
+  if (isValidQrToken(value)) {
     return value.toLowerCase()
   }
 
   return null
+}
+
+export function isValidQrToken(token: string): boolean {
+  return /^[a-f0-9]{64}$/i.test(token.trim())
+}
+
+export function describeQrSecurity() {
+  return 'This QR contains only a secure registration token — never your name, USN, or email.'
 }

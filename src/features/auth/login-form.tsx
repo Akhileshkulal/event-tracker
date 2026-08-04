@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuth } from '@/contexts/auth-context'
 import { loginSchema, type LoginFormValues } from '@/features/auth/schemas'
@@ -23,6 +23,7 @@ export function LoginForm() {
   const navigate = useNavigate()
   const location = useLocation()
   const [submitting, setSubmitting] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const from =
     (location.state as { from?: string } | null)?.from ?? null
@@ -82,15 +83,34 @@ export function LoginForm() {
 
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              placeholder="••••••••"
-              className="h-12 rounded-xl text-base"
-              aria-invalid={Boolean(errors.password)}
-              {...register('password')}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                placeholder="••••••••"
+                className="h-12 rounded-xl text-base pr-10"
+                aria-invalid={Boolean(errors.password)}
+                {...register('password')}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                onClick={() => setShowPassword(!showPassword)}
+                title={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? (
+                  <EyeOff className="size-4" />
+                ) : (
+                  <Eye className="size-4" />
+                )}
+                <span className="sr-only">
+                  {showPassword ? 'Hide password' : 'Show password'}
+                </span>
+              </Button>
+            </div>
             {errors.password ? (
               <p className="text-sm text-danger">{errors.password.message}</p>
             ) : null}
@@ -112,7 +132,69 @@ export function LoginForm() {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-muted-foreground">
+        <div className="mt-6 rounded-xl border border-border bg-accent/40 p-3.5 space-y-2">
+          <p className="text-xs font-semibold text-foreground">
+            Excel Demo Accounts (Click to auto-fill)
+          </p>
+          <div className="grid grid-cols-3 gap-1.5 pt-1">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 text-[11px] rounded-lg px-1 truncate"
+              onClick={() => {
+                const elEmail = document.getElementById('email') as HTMLInputElement
+                const elPass = document.getElementById('password') as HTMLInputElement
+                if (elEmail && elPass) {
+                  elEmail.value = 'user1@gmail.com'
+                  elPass.value = '12345678'
+                  elEmail.dispatchEvent(new Event('input', { bubbles: true }))
+                  elPass.dispatchEvent(new Event('input', { bubbles: true }))
+                }
+              }}
+            >
+              Participant
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 text-[11px] rounded-lg px-1 truncate"
+              onClick={() => {
+                const elEmail = document.getElementById('email') as HTMLInputElement
+                const elPass = document.getElementById('password') as HTMLInputElement
+                if (elEmail && elPass) {
+                  elEmail.value = 'organizer1@eventtrack.com'
+                  elPass.value = '12345678'
+                  elEmail.dispatchEvent(new Event('input', { bubbles: true }))
+                  elPass.dispatchEvent(new Event('input', { bubbles: true }))
+                }
+              }}
+            >
+              Organizer
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 text-[11px] rounded-lg px-1 truncate"
+              onClick={() => {
+                const elEmail = document.getElementById('email') as HTMLInputElement
+                const elPass = document.getElementById('password') as HTMLInputElement
+                if (elEmail && elPass) {
+                  elEmail.value = 'volunteer1@eventtrack.com'
+                  elPass.value = '12345678'
+                  elEmail.dispatchEvent(new Event('input', { bubbles: true }))
+                  elPass.dispatchEvent(new Event('input', { bubbles: true }))
+                }
+              }}
+            >
+              Volunteer
+            </Button>
+          </div>
+        </div>
+
+        <p className="mt-4 text-center text-sm text-muted-foreground">
           New here?{' '}
           <Link to="/register" className="font-medium text-primary hover:underline">
             Create an account

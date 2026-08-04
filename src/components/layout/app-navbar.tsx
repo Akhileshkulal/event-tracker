@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { LogOut, UserRound } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
+import { NotificationBell } from '@/features/notifications'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -32,6 +33,7 @@ export function AppNavbar({
           <div className="flex items-center gap-2">
             {isAuthenticated && user ? (
               <>
+                <NotificationBell />
                 <Badge variant="secondary" className="hidden capitalize sm:inline-flex">
                   {user.role}
                 </Badge>

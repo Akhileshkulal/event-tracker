@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
-import { QrCode } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { ArrowLeft, QrCode } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useMyRegistrations } from '@/hooks/use-events'
 import { formatDateTime } from '@/utils/date'
@@ -9,10 +9,20 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export function ParticipantRegistrationsPage() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const regsQuery = useMyRegistrations(user?.id)
 
   return (
     <main className="mx-auto w-full max-w-5xl space-y-6 px-4 py-6 sm:px-6">
+      <Button
+        variant="ghost"
+        className="h-10 rounded-xl px-3 text-muted-foreground hover:text-foreground"
+        onClick={() => navigate(-1)}
+      >
+        <ArrowLeft className="mr-2 size-4" />
+        Back
+      </Button>
+
       <div className="space-y-2">
         <h1 className="text-2xl font-semibold tracking-tight">My registrations</h1>
         <p className="text-muted-foreground">

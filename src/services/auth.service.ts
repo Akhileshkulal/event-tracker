@@ -1,5 +1,8 @@
 import { supabase } from '@/lib/supabase'
+import { DemoStore } from './demo-store'
 import type { User, UserRole } from '@/types'
+
+const DEMO_USER_KEY = 'eventtrack_demo_active_user'
 
 export type SignUpInput = {
   email: string
@@ -34,6 +37,13 @@ export async function signUp(input: SignUpInput) {
 }
 
 export async function signIn(email: string, password: string) {
+  // Check if demo user with password 12345678
+  const demoUser = DemoStore.findUserByEmail(email)
+  if (demoUser && password === '12345678') {
+    localStorage.setItem(DEMO_USER_KEY, JSON.stringify(demoUser))
+    return { user: demoUser }
+  }
+
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -44,24 +54,36 @@ export async function signIn(email: string, password: string) {
 }
 
 export async function signOut() {
+  localStorage.removeItem(DEMO_USER_KEY)
   const { error } = await supabase.auth.signOut()
   if (error) throw error
 }
 
 export async function getSession() {
+  const demoStr = localStorage.getItem(DEMO_USER_KEY)
+  if (demoStr) {
+    const user = JSON.parse(demoStr)
+    return { user }
+  }
   const { data, error } = await supabase.auth.getSession()
   if (error) throw error
   return data.session
 }
 
 export async function getCurrentUser(): Promise<User | null> {
+  const demoStr = localStorage.getItem(DEMO_USER_KEY)
+  if (demoStr) {
+    return JSON.parse(demoStr) as User
+  }
+
   const {
     data: { user },
     error: authError,
   } = await supabase.auth.getUser()
 
-  if (authError) throw authError
-  if (!user) return null
+  if (authError || !user) {
+    return null
+  }
 
   const { data, error } = await supabase
     .from('users')
@@ -69,7 +91,7 @@ export async function getCurrentUser(): Promise<User | null> {
     .eq('id', user.id)
     .single()
 
-  if (error) throw error
+  if (error) return null
   return data as User
 }
 

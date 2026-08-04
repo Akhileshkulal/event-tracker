@@ -53,6 +53,8 @@ export interface Registration {
   event_id: string
   participant_id: string
   qr_token: string
+  qr_version?: number
+  qr_rotated_at?: string | null
   status: RegistrationStatus
   registered_at: string
   cancelled_at: string | null

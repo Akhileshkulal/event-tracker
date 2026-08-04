@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   ArrowLeft,
   CalendarDays,
+  Download,
   Loader2,
   MapPin,
   Pencil,
@@ -99,6 +100,29 @@ export function OrganizerEventDetailPage() {
       }),
       queryClient.invalidateQueries({ queryKey: eventKeys.published() }),
     ])
+  }
+
+  function handleExportCsv() {
+    const participantsList = participantsQuery.data ?? []
+    if (!participantsList.length || !eventQuery.data) return
+
+    const headers = ['Full Name', 'USN', 'Email', 'Branch', 'Status', 'Registered At']
+    const rows = participantsList.map((p) => [
+      `"${p.users?.full_name ?? ''}"`,
+      `"${p.users?.usn ?? ''}"`,
+      `"${p.users?.email ?? ''}"`,
+      `"${p.users?.branch ?? ''}"`,
+      `"${p.status}"`,
+      `"${p.registered_at ? new Date(p.registered_at).toLocaleString() : ''}"`,
+    ])
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', `${eventQuery.data.title.replace(/[^a-zA-Z0-9]/g, '_')}_Attendees.csv`)
+    link.click()
+    toast.success('Attendee list downloaded as CSV')
   }
 
   if (eventQuery.isLoading) {
@@ -253,7 +277,20 @@ export function OrganizerEventDetailPage() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Participants</h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold">Participants</h2>
+          {participants.length > 0 ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCsv}
+              className="h-9 gap-1.5 rounded-xl text-xs font-medium"
+            >
+              <Download className="size-3.5" />
+              Export CSV
+            </Button>
+          ) : null}
+        </div>
 
         {participantsQuery.isLoading ? (
           <Skeleton className="h-48 rounded-[20px]" />

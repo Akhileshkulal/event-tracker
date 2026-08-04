@@ -5,7 +5,7 @@ import {
   useVolunteerEventStats,
 } from '@/hooks/use-volunteers'
 import { DashboardCard } from '@/components/shared/dashboard-card'
-import { ManualCheckInForm } from '@/features/scanner/manual-check-in-form'
+import { CheckInPanel } from '@/features/scanner/check-in-panel'
 import { formatDateTime } from '@/utils/date'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -66,14 +66,13 @@ export function VolunteerEventDetailPage() {
       <Button asChild className="h-12 w-full rounded-xl text-base">
         <Link to="/volunteer/scanner">
           <ScanLine className="size-4" />
-          Open scanner
+          Open full scanner
         </Link>
       </Button>
 
       <div className="rounded-[20px] bg-surface p-5 ring-1 ring-border">
-        <h2 className="mb-4 text-lg font-semibold">Manual check-in</h2>
-        <ManualCheckInForm
-          method="manual"
+        <CheckInPanel
+          method="qr_scan"
           onCheckedIn={() => {
             void statsQuery.refetch()
           }}

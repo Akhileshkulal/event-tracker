@@ -35,13 +35,17 @@ export async function markAllNotificationsRead(userId: string) {
 }
 
 export async function createNotification(
-  input: Omit<Notification, 'id' | 'created_at' | 'is_read'> & {
+  input: Omit<Notification, 'id' | 'created_at' | 'is_read' | 'link'> & {
     is_read?: boolean
+    link?: string | null
   },
 ) {
   const { data, error } = await supabase
     .from('notifications')
-    .insert(input)
+    .insert({
+      ...input,
+      link: input.link ?? null,
+    })
     .select()
     .single()
 

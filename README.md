@@ -20,8 +20,8 @@ Built with React, Vite, TypeScript, Tailwind CSS, shadcn/ui, and Supabase.
 | 3 — Participant Portal | Done |
 | 4 — Organizer Portal | Done |
 | 5 — Volunteer Portal | Done |
-| 6 — QR Generation | Pending |
-| 7 — QR Scanner | Pending |
+| 6 — QR Generation | Done |
+| 7 — QR Scanner | Done |
 | 8 — Realtime Dashboard | Pending |
 | 9 — Certificates | Pending |
 | 10 — PWA, Testing, Deployment | Pending |

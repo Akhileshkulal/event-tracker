@@ -126,3 +126,14 @@
 @utility safe-area-pb {
   padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
 }
+
+/* html5-qrcode scanner viewport */
+.qr-scanner-viewport video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.qr-scanner-viewport #qr-shaded-region {
+  border-radius: 16px;
+}
