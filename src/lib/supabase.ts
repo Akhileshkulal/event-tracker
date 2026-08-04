@@ -2,7 +2,11 @@ import { createClient } from '@supabase/supabase-js'
 
 function sanitizeEnv(val?: string): string {
   if (!val) return ''
-  return val.trim().replace(/^["']|["']$/g, '').replace(/[\r\n]/g, '').trim()
+  return val
+    .trim()
+    .replace(/^["']|["']$/g, '')
+    .replace(/[^\x20-\x7E]/g, '')
+    .trim()
 }
 
 const envUrl = sanitizeEnv(import.meta.env.VITE_SUPABASE_URL)
@@ -30,5 +34,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: true,
   },
 })
+
 
 
