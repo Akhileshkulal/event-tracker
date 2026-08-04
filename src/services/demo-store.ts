@@ -8,18 +8,26 @@ type DemoStoreState = {
   events: Event[]
   registrations: any[]
   attendance: Attendance[]
+  event_volunteers?: any[]
 }
 
 function loadState(): DemoStoreState {
   try {
     const saved = localStorage.getItem(STORAGE_KEY)
     if (saved) {
-      return JSON.parse(saved)
+      const parsed = JSON.parse(saved)
+      return {
+        event_volunteers: [],
+        ...parsed,
+      }
     }
   } catch (err) {
     console.warn('Failed to read localStorage demo state:', err)
   }
-  return demoData as any as DemoStoreState
+  return {
+    event_volunteers: [],
+    ...(demoData as any),
+  } as DemoStoreState
 }
 
 function saveState(state: DemoStoreState) {
@@ -56,6 +64,34 @@ export const DemoStore = {
 
   getRegistrations(): any[] {
     return storeState.registrations
+  },
+
+  getVolunteersForEvent(eventId: string): any[] {
+    const list = storeState.event_volunteers ?? []
+    return list.filter((v) => v.event_id === eventId)
+  },
+
+  assignVolunteer(assignedRow: any): any {
+    if (!storeState.event_volunteers) {
+      storeState.event_volunteers = []
+    }
+    const exists = storeState.event_volunteers.some(
+      (v) => v.event_id === assignedRow.event_id && v.volunteer_id === assignedRow.volunteer_id,
+    )
+    if (exists) {
+      throw new Error('Duplicate assignment: Volunteer is already assigned')
+    }
+    storeState.event_volunteers.unshift(assignedRow)
+    saveState(storeState)
+    return assignedRow
+  },
+
+  removeVolunteer(assignmentId: string): void {
+    if (!storeState.event_volunteers) return
+    storeState.event_volunteers = storeState.event_volunteers.filter(
+      (v) => v.id !== assignmentId,
+    )
+    saveState(storeState)
   },
 
   getRegistrationsForUser(userId: string): RegistrationWithEvent[] {
@@ -166,3 +202,4 @@ export const DemoStore = {
     return storeState.attendance
   },
 }
+
